@@ -7,6 +7,7 @@ import { NotesListView } from './components/NotesListView';
 import { SettingsPanel } from './components/SettingsPanel';
 import { UploadModal } from './components/UploadModal';
 import { ShareModal } from './components/ShareModal';
+import { DiagramsPanel } from './components/DiagramsPanel';
 import { useNotes } from './hooks/useNotes';
 import { useSettings } from './hooks/useSettings';
 import { downloadNote, downloadAllNotes } from './utils/fileUtils';
@@ -36,6 +37,7 @@ function App() {
   const [isPreviewMode, setIsPreviewMode] = useState(false);
   const [showDownloads, setShowDownloads] = useState(false);
   const [showNotesList, setShowNotesList] = useState(false);
+  const [showDiagrams, setShowDiagrams] = useState(false);
 
   const handleCreateNote = () => {
     createNote();
@@ -45,7 +47,7 @@ function App() {
 
   const handleSelectNote = (id: string) => {
     setSelectedNoteId(id);
-    setShowDownloads(true);
+    setShowDownloads(false);
     setIsPreviewMode(false);
     setShowNotesList(false);
   };
@@ -53,7 +55,7 @@ function App() {
   const handleUploadFile = (title: string, content: string) => {
     const noteId = createNote(title, content);
     setSelectedNoteId(noteId);
-    setShowDownloads(true);
+    setShowDownloads(false);
     setShowNotesList(false);
   };
 
@@ -87,21 +89,24 @@ function App() {
     setShowNotesList(false);
   };
 
-  const handleShowNotesList = () => {
-    setShowNotesList(true);
-    setShowDownloads(false);
+  const handleShowDownloadsList = () => {
+    setShowDownloads(true);
+    setShowNotesList(false);
     setIsPreviewMode(false);
     setSelectedNoteId(null);
   };
 
-  const handleSelectNoteFromList = (id: string) => {
+  const handleSelectNoteFromDownloads = (id: string) => {
     setSelectedNoteId(id);
-    setShowNotesList(false);
-    setShowDownloads(true);
+    setShowDownloads(false);
+  };
+
+  const handleToggleDiagrams = () => {
+    setShowDiagrams(!showDiagrams);
   };
 
   return (
-    <div className="h-screen flex bg-gray-50">
+    <div className="h-screen flex bg-gray-50 relative">
       <Sidebar
         notes={notes}
         selectedNoteId={selectedNoteId}
@@ -117,17 +122,16 @@ function App() {
         onUpload={() => setShowUpload(true)}
         onDownloadAll={handleDownloadAll}
         onSettings={() => setShowSettings(true)}
-        onShowNotesList={handleShowNotesList}
+        onShowDownloadsList={handleShowDownloadsList}
         readingSettings={settings.reading}
       />
 
       <main className="flex-1 flex flex-col min-w-0">
-        {showNotesList ? (
-          <NotesListView
+        {showDownloads ? (
+          <DownloadsView
             notes={notes}
-            onSelectNote={handleSelectNoteFromList}
-            onCreateNote={handleCreateNote}
-            onDeleteNote={deleteNote}
+            onSelectNote={handleSelectNoteFromDownloads}
+            onDownloadNote={handleDownloadNote}
             onToggleStar={toggleStar}
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
@@ -135,12 +139,6 @@ function App() {
             onCategoryChange={setSelectedCategory}
             categories={categories}
             settings={settings.reading}
-          />
-        ) : selectedNote && showDownloads ? (
-          <DownloadsView
-            note={selectedNote}
-            settings={settings.reading}
-            onUpdateSettings={updateReadingSettings}
           />
         ) : selectedNote && isPreviewMode ? (
           <NotePreview
@@ -150,6 +148,7 @@ function App() {
             onToggleStar={toggleStar}
             onShare={handleShareNote}
             onDownload={handleDownloadNote}
+            onToggleDiagrams={handleToggleDiagrams}
           />
         ) : (
           <NoteEditor
@@ -161,9 +160,18 @@ function App() {
             onShare={handleShareNote}
             onTogglePreview={handleTogglePreview}
             isPreview={isPreviewMode}
+            onToggleDiagrams={handleToggleDiagrams}
           />
         )}
       </main>
+
+      {/* Diagrams Panel */}
+      <DiagramsPanel
+        isOpen={showDiagrams}
+        onClose={() => setShowDiagrams(false)}
+        note={selectedNote}
+        onUpdateNote={updateNote}
+      />
 
       {/* Modals */}
       <SettingsPanel
