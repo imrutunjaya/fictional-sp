@@ -28,7 +28,7 @@ interface SidebarProps {
   onUpload: () => void;
   onDownloadAll: () => void;
   onSettings: () => void;
-  onShowNotesList: () => void;
+  onShowDownloadsList: () => void;
   readingSettings: ReadingSettings;
 }
 
@@ -47,7 +47,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onUpload,
   onDownloadAll,
   onSettings,
-  onShowNotesList,
+  onShowDownloadsList,
   readingSettings,
 }) => {
   const formatDate = (date: Date) => {
@@ -77,16 +77,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div className="p-4 border-b border-opacity-20">
         <div className="flex items-center justify-between">
           {!collapsed && (
-            <button
-              onClick={onShowNotesList}
-              className="text-xl font-semibold hover:text-blue-600 transition-colors cursor-pointer"
-              style={{ 
-                fontSize: `${readingSettings.fontSize + 4}px`,
-                fontFamily: readingSettings.fontFamily 
-              }}
-            >
-              Notes
-            </button>
+            <div className="flex items-center gap-2">
+              <h1 
+                className="text-xl font-semibold"
+                style={{ 
+                  fontSize: `${readingSettings.fontSize + 4}px`,
+                  fontFamily: readingSettings.fontFamily 
+                }}
+              >
+                Notes
+              </h1>
+              <button
+                onClick={onShowDownloadsList}
+                className="p-2 hover:bg-gray-200 hover:bg-opacity-20 rounded-lg transition-colors"
+                title="Downloads"
+              >
+                <Download size={18} />
+              </button>
+            </div>
           )}
           <button
             onClick={onToggleCollapse}

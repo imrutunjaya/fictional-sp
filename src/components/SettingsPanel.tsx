@@ -24,6 +24,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
     { name: 'Times', value: 'Times, serif' },
     { name: 'Courier', value: 'Courier, monospace' },
     { name: 'Helvetica', value: 'Helvetica, sans-serif' },
+    { name: 'Handwritten', value: "'Kalam', 'Comic Sans MS', cursive" },
   ];
 
   const themes = [
